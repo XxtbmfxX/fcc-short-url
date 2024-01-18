@@ -11,8 +11,8 @@ const conectarBaseDeDatos = async () => {
     try {
 
 
-        const username = encodeURIComponent(process.env["USER_DB"]);
-        const password = encodeURIComponent(process.env["USER_PASSWORD"]);
+        const username = process.env["USER_DB"]
+        const password = process.env["USER_PASSWORD"]
 
         const uri = `mongodb+srv://${username}:${password}@cluster0.p7vsale.mongodb.net/?retryWrites=true&w=majority`
         await mongoose.connect(uri, {
