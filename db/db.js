@@ -2,20 +2,10 @@
 const mongoose = require("mongoose");
 
 
-const username = encodeURIComponent(process.env["USER_DB"]);
-const password = encodeURIComponent(process.env["USER_PASSWORD"]);
-
-const uri = `mongodb+srv://${username}:${password}@cluster0.p7vsale.mongodb.net/?retryWrites=true&w=majority`
-
 const conectarBaseDeDatos = async () => {
     try {
 
-
-        let username = process.env["USER_DB"]
-        let password = process.env["USER_PASSWORD"]
-
-        let uri = `mongodb+srv://${username}:${password}@cluster0.p7vsale.mongodb.net/?retryWrites=true&w=majority`
-        await mongoose.connect(uri, {
+        await mongoose.connect(`mongodb+srv://aatn1321:oQTU17OII4WMwb1D@cluster0.p7vsale.mongodb.net/?retryWrites=true&w=majority`, {
             useNewUrlParser: true,
             useUnifiedTopology: true,
         });
