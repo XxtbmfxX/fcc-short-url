@@ -1,54 +1,67 @@
-const database = require("../db/db")
+
+const db = require("../db/dbFunctions")
 
 const dns = require("dns")
 
 const handlePost = async (req, res) => {
+  try {
+    const { url } = req.body;
+    const { hostname } = new URL(url);
 
-    const db = await database.getDB();
+    console.log(hostname)
 
-    const dato = await db.command({ serverStatus: 1 }).localTime
+    dns.lookup(hostname, async (err, address) => {
 
-    res.send({
-      ladb: dato,
-      ping: "pong"
-    })
+      if (!address) {
+        throw new Error("Invalid Adress")
+      }
 
-  // try {
+      else {
+        const urlEnDb = await db.agregarURL(url)
 
-  //   const db = database.getDB();
+        if (urlEnDb) {
+          console.log(db.getURLS)
+          res.send(urlEnDb)
+        } else {
 
-  //   const { url } = req.body;
-  //   const { hostname } = new URL(url);
 
-  //   dns.lookup(hostname, async (err, address) => {
+          const shortUrl = await db.getUrlCount()
+          const urlObj = {
+            original_url: url,
+            short_url: shortUrl,
+          };
 
-  //     if (!address) {
-  //       throw new Error("Invalid Adress")
-  //     }
+          const newUrlObject = db.agregarURL(urlObj)
 
-  //     else {
+          res.send(newUrlObject)
+        }
+      }
 
-  //       const shortUrl = // encontrar en base al largo de los objetos en la colección 
+    });
+  }
+  catch (error) {
+    console.log(error)
+    res.json({ error: error })
+  }
 
-  //       const urlObj = {
-  //         original_url: url,
-  //         short_url: shortUrl,
-  //       };
 
-  //       const newUrlObject = // agregar a la db 
-
-  //       res.send(urlObj)
-  //     }
-  //   });
-  // }
-  // catch (error) {
-  //   console.log(error)
-  //   res.json({ error: error })
-  // }
 };
 
-const handleGet = (req, res) => {
-  res.send('¡Hola! Esta es una solicitud GET en el endpoint /api/shorturl');
+const handleGet = async (req, res) => {
+  const { shorturl } = req.params
+
+  const urlInDB = await db.buscarPorUrl(shorturl)
+
+  if (urlInDB) {
+
+    res.redirect(urlInDB.original_url)
+    
+  } else {
+    res.send({
+      error: "No short URL found for the given input"
+    })
+  }
+
 }
 
 

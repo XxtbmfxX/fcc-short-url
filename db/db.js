@@ -1,37 +1,22 @@
 
+const mongoose = require("mongoose");
 
-const { MongoClient } = require('mongodb');
-
-class Database {
-  constructor() {
-    if (!Database.instance) {
-      this.url = process.env.DB_URL;
-      this.dbName = process.env.DB_NAME;
-
-      this.client = new MongoClient(this.url, { useNewUrlParser: true, useUnifiedTopology: true });
-      this.db = null;
-
-      Database.instance = this;
-    }
-
-    return Database.instance;
+const conectarBaseDeDatos = async () => {
+  try {
+    await mongoose.connect(process.env["MONGO_URI"], {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+    console.log("Conexión a la base de datos establecida");
+  } catch (error) {
+    console.error("Error al conectar a la base de datos:", error.message);
+    throw error;
   }
+};
 
-  async connect() {
-    try {
-      await this.client.connect();
-      this.db = this.client.db(this.dbName); // Utiliza this.dbName en lugar de dbName
-      console.log('Conexión exitosa a MongoDB');
-    } catch (error) {
-      console.error('Error al conectar a MongoDB:', error);
-    }
-  }
+const cerrarConexion = () => {
+  mongoose.connection.close();
+  console.log("Conexión a la base de datos cerrada");
+};
 
-  getDB() {
-    return this.db;
-  }
-}
-
-const database = new Database();
-
-module.exports = database;
+module.exports = { conectarBaseDeDatos, cerrarConexion };
