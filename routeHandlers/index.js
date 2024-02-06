@@ -3,46 +3,29 @@ const db = require("../db/dbFunctions")
 
 const dns = require("dns")
 
+
+
 const handlePost = async (req, res) => {
-  try {
-    const { url } = req.body;
-    const { hostname } = new URL(url);
+ // Verificar si se proporcionó una URL en el body de la petición
+ if (!req.body || !req.body.url) {
+  return res.status(400).json({ error: 'invalid url' });
+}
 
-    console.log(hostname)
+const urlString = req.body.url;
 
-    dns.lookup(hostname, async (err, address) => {
+try {
+  // Intentar crear un objeto URL con la cadena proporcionada
+  const urlObj = new URL(urlString);
 
-      if (!address) {
-        throw new Error("Invalid Adress")
-      }
+  //buscar en base de datos , si está debolver en el formato pedido
+  db.agregarURL(urlObj).then((db_resp) => {
+    res.json(db_resp)
+  })
 
-      else {
-        const urlEnDb = await db.agregarURL(url)
-
-        if (urlEnDb) {
-          console.log(db.getURLS)
-          res.send(urlEnDb)
-        } else {
-
-
-          const shortUrl = await db.getUrlCount()
-          const urlObj = {
-            original_url: url,
-            short_url: shortUrl,
-          };
-
-          const newUrlObject = db.agregarURL(urlObj)
-
-          res.send(newUrlObject)
-        }
-      }
-
-    });
-  }
-  catch (error) {
-    console.log(error)
-    res.json({ error: error })
-  }
+} catch (error) {
+  // Si se lanzó una excepción, entonces la URL no es válida
+  res.status(400).json({ error: 'invalid url' });
+}
 
 
 };

@@ -42,5 +42,5 @@ app.post('/api/shorturl', routeHandlers.handlePost)
 
 
 app.listen(port, function() {
-  console.log(`Listening on port ${port}`);
+  console.log(`Listening on port http://localhost:${port}`);
 });
