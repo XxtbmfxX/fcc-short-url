@@ -1,10 +1,6 @@
 
 const db = require("../db/dbFunctions")
 
-const dns = require("dns")
-
-
-
 const handlePost = async (req, res) => {
  // Verificar si se proporcionó una URL en el body de la petición
  if (!req.body || !req.body.url) {
